@@ -1,0 +1,15 @@
+<meta charset="UTF-8"> 
+<html>
+<head>
+	<title>Danh Sách Album</title>
+</head>
+<body>
+	<h1>Danh Sách Album</h1>
+	<table width="650">
+		<tr>
+			<td width="80%">Tên album</td><td width="20%">Tác giả</td>
+		</tr>
+		`|ALBUM_LIST|`
+	</table>
+</body>
+</html>

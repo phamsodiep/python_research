@@ -1,0 +1,16 @@
+<meta charset="UTF-8"> 
+<html>
+<head>
+	<title>Danh Sách Nhạc</title>
+</head>
+<body>
+	<a href="/">Tro ve</a>
+	<h1>Danh Sách Nhạc</h1>
+	<table width="700">
+		<tr>
+			<td width="75%">Tên album</td><td width="25%">Tác giả</td>
+		</tr>
+		`|ALBUM_SONGS|`
+	</table>
+</body>
+</html>
