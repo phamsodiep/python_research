@@ -60,22 +60,33 @@ def list_folder(url_context, path, is_list_file):
 			result += "<tr><td><a href='%s%s'>%s</a></td><td>%s</td></tr>\n" % (url_context, folder_meta[0], folder_meta[1], folder_meta[2])
 	return result
 
+REDIRECT = """<head><meta http-equiv="refresh" content="0; url=/%s" /></head>
+<body>Play <em>%s</em>...</body>
+"""
 
 # Engine class
 class RemoteMusicBoxHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-	def write_album_page(s, album):
+	def write_album_page(s, contextpath):
                 try:
 			# Validate
 			# Send header
                         s.send_response(200)
                         s.send_header("Content-type", "text/html")
                         s.end_headers()
-			#
-			#print str(list_folder(album, MEDIA_FOLDER + "/" + album, True))
-			album_songs = list_folder(album + "/", MEDIA_FOLDER + "/" + album, True)
-                        file = open(TEMPLATE_FOLDER + "/album.txt" , "r")
-                        htmltxt = file.read()
-                        htmltxt = htmltxt.replace("`|ALBUM_SONGS|`", album_songs)
+			# parse context path
+			context_params = contextpath.split("/")
+			album = context_params[0]
+			if (len(context_params) > 1):
+				file = open(TEMPLATE_FOLDER + "/playsong.txt" , "r")
+				htmltxt = file.read()
+				htmltxt = htmltxt.replace("`|PLAYING_ALBUM|`", album)
+				htmltxt = htmltxt.replace("`|PLAYING_SONG|`", context_params[1])
+			else:
+				#print str(list_folder(album, MEDIA_FOLDER + "/" + album, True))
+				album_songs = list_folder(album + "/", MEDIA_FOLDER + "/" + album, True)
+				file = open(TEMPLATE_FOLDER + "/album.txt" , "r")
+				htmltxt = file.read()
+				htmltxt = htmltxt.replace("`|ALBUM_SONGS|`", album_songs)
 			# Send content
                         s.wfile.write(htmltxt)
                 except:
