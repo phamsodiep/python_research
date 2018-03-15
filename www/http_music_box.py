@@ -4,6 +4,7 @@
 import SocketServer
 import BaseHTTPServer
 import os
+import time
 
 
 # GLOBAL CONSTANTS
@@ -60,12 +61,10 @@ def list_folder(url_context, path, is_list_file):
 			result += "<tr><td><a href='%s%s'>%s</a></td><td>%s</td></tr>\n" % (url_context, folder_meta[0], folder_meta[1], folder_meta[2])
 	return result
 
-REDIRECT = """<head><meta http-equiv="refresh" content="0; url=/%s" /></head>
-<body>Play <em>%s</em>...</body>
-"""
-
 # Engine class
 class RemoteMusicBoxHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+	request_played_song = None
+
 	def write_album_page(s, contextpath):
                 try:
 			# Validate
@@ -81,6 +80,7 @@ class RemoteMusicBoxHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 				htmltxt = file.read()
 				htmltxt = htmltxt.replace("`|PLAYING_ALBUM|`", album)
 				htmltxt = htmltxt.replace("`|PLAYING_SONG|`", context_params[1])
+				s.request_played_song = context_params[1]
 			else:
 				#print str(list_folder(album, MEDIA_FOLDER + "/" + album, True))
 				album_songs = list_folder(album + "/", MEDIA_FOLDER + "/" + album, True)
@@ -114,6 +114,10 @@ class RemoteMusicBoxHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 		if s.path == "/":
 			s.write_album_enum_page()
 		else:
+			if (not(s.request_played_song is None)):
+				print "Play... %s " % s.request_played_song
+				s.request_played_song = None
+				time.sleep(10)
 			s.write_album_page(s.path[1:])
 
 
