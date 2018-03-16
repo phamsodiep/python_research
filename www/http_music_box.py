@@ -21,8 +21,8 @@ EMPTY_TEXT = "&nbsp;"
 def read_folder_metadata(path):
 	result = []
 	try:
-		file = open(path + "/" + METADATA_FILENAME, "r")
-		filecontent = file.read()
+		metafile = open(path + "/" + METADATA_FILENAME, "r")
+		filecontent = metafile.read()
 		if not(filecontent is None):
 			metarows = filecontent.split("\n")
 			for metarow in metarows:
@@ -65,60 +65,60 @@ def list_folder(url_context, path, is_list_file):
 class RemoteMusicBoxHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 	request_played_song = None
 
-	def write_album_page(s, contextpath):
+	def write_album_page(self, contextpath):
                 try:
 			# Validate
 			# Send header
-                        s.send_response(200)
-                        s.send_header("Content-type", "text/html")
-                        s.end_headers()
+                        self.send_response(200)
+                        self.send_header("Content-type", "text/html")
+                        self.end_headers()
 			# parse context path
 			context_params = contextpath.split("/")
 			album = context_params[0]
 			if (len(context_params) > 1):
-				file = open(TEMPLATE_FOLDER + "/playsong.txt" , "r")
-				htmltxt = file.read()
+				template_file = open(TEMPLATE_FOLDER + "/playsong.txt" , "r")
+				htmltxt = template_file.read()
 				htmltxt = htmltxt.replace("`|PLAYING_ALBUM|`", album)
 				htmltxt = htmltxt.replace("`|PLAYING_SONG|`", context_params[1])
-				s.request_played_song = context_params[1]
+				self.request_played_song = context_params[1]
 			else:
 				#print str(list_folder(album, MEDIA_FOLDER + "/" + album, True))
 				album_songs = list_folder(album + "/", MEDIA_FOLDER + "/" + album, True)
-				file = open(TEMPLATE_FOLDER + "/album.txt" , "r")
-				htmltxt = file.read()
+				template_file = open(TEMPLATE_FOLDER + "/album.txt" , "r")
+				htmltxt = template_file.read()
 				htmltxt = htmltxt.replace("`|ALBUM_SONGS|`", album_songs)
 			# Send content
-                        s.wfile.write(htmltxt)
+                        self.wfile.write(htmltxt)
                 except:
                         pass
-	def write_album_enum_page(s):
+	def write_album_enum_page(self):
 		try:
 			# Validate
 			# Send header
-                        s.send_response(200)
-                        s.send_header("Content-type", "text/html")
-                        s.end_headers()
+                        self.send_response(200)
+                        self.send_header("Content-type", "text/html")
+                        self.end_headers()
 			#
-			file = open(TEMPLATE_FOLDER + "/album_enum.txt" , "r")
-			htmltxt = file.read()
+			template_file = open(TEMPLATE_FOLDER + "/album_enum.txt" , "r")
+			htmltxt = template_file.read()
 			htmltxt = htmltxt.replace("`|ALBUM_LIST|`", list_folder("/", MEDIA_FOLDER, False))
 			# Send content
-                	s.wfile.write(htmltxt)
+                	self.wfile.write(htmltxt)
 		except:
 			pass
-	def do_HEAD(s):
-		s.send_response(200)
-		s.send_header("Content-type", "text/html")
-		s.end_headers()
-	def do_GET(s):
-		if s.path == "/":
-			s.write_album_enum_page()
+	def do_HEAD(self):
+		self.send_response(200)
+		self.send_header("Content-type", "text/html")
+		self.end_headers()
+	def do_GET(self):
+		if self.path == "/":
+			self.write_album_enum_page()
 		else:
-			if (not(s.request_played_song is None)):
-				print "Play... %s " % s.request_played_song
-				s.request_played_song = None
+			if (not(self.request_played_song is None)):
+				print "Play... %s " % self.request_played_song
+				self.request_played_song = None
 				time.sleep(10)
-			s.write_album_page(s.path[1:])
+			self.write_album_page(self.path[1:])
 
 
 
